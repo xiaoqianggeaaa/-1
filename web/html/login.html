@@ -101,7 +101,7 @@
                                     arr.push(xhr.responseText);
                                     arr=JSON.stringify(arr);
                                     document.cookie="user="+arr+";expires="+date.toString()+";path=/";
-                                    location.href="http://localhost:8080/index.html";
+                                    location.href="http://localhost:88/index.html";
                                 }else if(xhr.responseText=='user_err'){
                                     thep.innerHTML='用户名错误';
                                 }else if(xhr.responseText=='pass_err'){
@@ -112,7 +112,7 @@
 
                                 
                           }
-                          xhr.open('get','http://localhost:8800/login?user='+inp1.value+'&&password='+inp2.value,true);
+                          xhr.open('get','http://localhost:88/login?user='+inp1.value+'&&password='+inp2.value,true);
                     
                           xhr.send();
                         

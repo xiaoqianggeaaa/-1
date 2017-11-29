@@ -1,5 +1,13 @@
          $(function(){
 
+
+                $.get('http://localhost:88/ismy',function(res){
+                        console.log(res);
+                })
+
+
+
+
                        //添加管理员，会员
         var cookies=document.cookie;
         if(cookies!=""){//权限管理
@@ -10,7 +18,7 @@
               $('#li_btn').on('click',function(){
                   
                     
-                     $.post('http://localhost:8800/find',{
+                     $.post('http://localhost:88/find',{
                             'user': $('#li_inp1').val(),
                             'date' : $('#li_inp2').val()
 
@@ -46,7 +54,7 @@
                                         
                                         $(this).parent().parent().remove();
                                         $('.couts').html("共"+(thecout--)+"条");
-                                       $.post('http://localhost:8800/dele',{
+                                       $.post('http://localhost:88/dele',{
                                                 'idx' : $(this).parent().parent().children()[1].innerHTML
                                        },function(data){
                                           
@@ -166,13 +174,13 @@
                                 var obj={};
                                 obj.arr=arr;
                                 console.log(obj);
-                                $.post('http://localhost:8800/dele',{
+                                $.post('http://localhost:88/dele',{
                                     'isarr':arr
                                 },function(data){
                           
                                      })
 
-                                        location.href="http://localhost:8080/html/login.html";
+                                        location.href="http://localhost:88/html/login.html";
                                         return;
                                         
                                     })
@@ -194,7 +202,7 @@
                                         var obj={};
                                         obj.arr=arr;
                                         console.log(obj);
-                                        $.post('http://localhost:8800/dele',{
+                                        $.post('http://localhost:88/dele',{
                                             'isarr':arr
                                         },function(data){
                                   

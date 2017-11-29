@@ -1,7 +1,7 @@
 $(function(){
     $('#li_btn').on('click',function(){
 
-        $.post('http://localhost:8800/login',{
+        $.post('http://localhost:88/login',{
             'user' : $('#li_inp1').val(),
             'password' :  $('#li_inp2').val()
         },function(data){

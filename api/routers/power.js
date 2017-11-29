@@ -1,5 +1,6 @@
 //权限管理模块
 var express=require('express');
+var app=express();
 var path = require('path');
 var jwt=require('jsonwebtoken');
 var bp=require('body-parser');
@@ -14,24 +15,32 @@ var db=new mongo.Db('db',server,{safe:true});
 var mogodb=require('./mymogodp');
 
 var username,token,obj;
-var app =express();
+// var app =express();
 //引入token解密模块
 var jwt_simple=require('jwt-simple');
-app.set('jwtTokenSecret', 'YOUR_SECRET_STRING');
+module.exports={
+  
+  register: function(app){
 
+
+
+
+app.set('jwtTokenSecret', 'YOUR_SECRET_STRING');
+      
     app.use(bp.urlencoded({extended: false}));
 
-       app.all('*', function(req, res, next) {
-            res.header("Access-Control-Allow-Origin", "*");
-            res.header("Access-Control-Allow-Headers", "Content-Type,Content-Length, Authorization, Accept,X-Requested-With");
-            res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
-            res.header("X-Powered-By",' 3.2.1');
-            if(req.method=="OPTIONS") {
-              res.send(200);/*让options请求快速返回*/
-            } else{
-              next();
-            }
-        });
+       // app.all('*', function(req, res, next) {
+       //      res.header("Access-Control-Allow-Origin", "*");
+       //      res.header("Access-Control-Allow-Headers", "Content-Type,Content-Length, Authorization, Accept,X-Requested-With");
+       //      res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+       //      res.header("X-Powered-By",' 3.2.1');
+       //      if(req.method=="OPTIONS") {
+       //        res.send(200);/*让options请求快速返回*/
+       //      } else{
+       //        next();
+       //      }
+       //  });
+
 
 app.post('/index',function(req,res){
        username=req.body.name;
@@ -157,5 +166,6 @@ app.get('/login',function(req,res){
         })
 })
 
+}
+}
 
-app.listen(8800);
