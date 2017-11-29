@@ -1,9 +1,10 @@
 
+
 var mongodb = require('mongodb');
 var client = mongodb.MongoClient;
 var connstr = 'mongodb://127.0.0.1:27017/db';
 
-var apiresult = require('../modules/apiresult');
+var apiresult = require('../modules/apiresult_p');
 
 var db;
 client.connect(connstr, function(_error, _db){
@@ -17,6 +18,7 @@ client.connect(connstr, function(_error, _db){
 module.exports = {
     select: function(_collection, _condition, _cb){
         db.collection(_collection).find(_condition || {}).toArray(function(error, result){
+<<<<<<< HEAD
             _cb(apiresult(error ? false : true, error || result));
         })
     },
@@ -60,3 +62,4 @@ module.exports = {
 
     }
 }
+

@@ -1,9 +1,11 @@
 
+
+var mongodb_p = require('./mongodb_p');
 var mongodb = require('./mongodb');
 
 module.exports = {
-    mongodb: mongodb,
+    mongodb_p: mongodb,
+    mongodb: mongodb
 }
-
 
 

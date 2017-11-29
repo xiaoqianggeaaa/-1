@@ -1,4 +1,7 @@
          $(function(){
+              $('#li_master').on("click",function(){
+                    $('#content_right').html("").load("http://localhost:88/html/power.html #li_right",function(){
+
 
 
 		$(".supplier").on("click",function(){
@@ -8,6 +11,13 @@
 		})
             
 
+                        indexit();
+              });
+              })
+
+
+    indexit();
+ function indexit(){
 
                        //添加管理员，会员
         var cookies=document.cookie;
@@ -218,6 +228,8 @@
         })
 
     }
+}     
+
  })  
 
 

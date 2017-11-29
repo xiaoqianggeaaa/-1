@@ -33,7 +33,7 @@ $(function(){
                         var date=new Date();
                         date.setDate(date.getDate()-7);
                         document.cookie="user="+cookies[0]+";expires="+date.toString()+";path=/";
-                        location.href="http://localhost:8080/html/login.html";
+                        location.href="http://localhost:88/html/login.html";
                 })
 
         }
