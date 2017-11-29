@@ -1,0 +1,31 @@
+div,body,h1,h2,h3,h4,h5,h6,p,main,select,nav,ul,li,ol,li,dl,dt,dd{
+    margin:0;
+    padding:0;
+}
+.clearfix::after{
+    content:"";
+    clear:both;
+    overflow:hidden;
+    visibility: hidden;
+    display: block;
+    height:0;
+    zoom: 0;
+
+}
+li{
+    list-style: none;
+}
+img{
+    display:block;
+    border:0 none;
+}
+a{
+    text-decoration: none;
+}
+.center_box{
+    width:1102px;
+    
+}
+html,body{
+    height:100%;
+}

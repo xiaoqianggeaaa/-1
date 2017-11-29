@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>供应商管理</title>
+		<link rel="stylesheet" href="css/supplier.css" />
+	</head>
+	<body>
+		<div id="container">
+			<h4>
+            	<span class="h4_img"></span>
+            	<span>首页>产品管理>商家管理</span>
+        	</h4>
+			<div class="search">
+				<h3>搜索供应商</h3>
+				<label>供应商名称：<input type="text" placeholder="请输入关键字" id="searchSupplier"/></label>
+				<input type="button" value="搜索" id="btnSearch" />
+				<div class="content"></div>
+			</div>
+			<div class="add">
+				<h3>添加供应商</h3>
+				<div>
+					<span class="title">供应商名称：</span><input type="text" id="addSupName"/>
+				</div>
+				<div>
+					<span class="title">商品名称：</span><input type="text" id="addSupPro"/>
+				</div>
+				<div>
+					<span class="title">联系人：</span><input type="text" id="addSupPerson"/>
+				</div>
+				<div>
+					<span class="title">联系电话：</span><input type="text" id="addSupPhone"/>
+				</div>
+				<div>
+					<span class="title">地址：</span><input type="text" id="addSupAddress"/>
+				</div>
+				<div>
+					<span class="title">开户银行：</span><input type="text" id="addSupBank"/>
+				</div>
+				<div>
+					<span class="title">商品类型：</span><input type="text" id="addSupType"/>
+				</div>
+				<div>
+					<input type="button" value="确定" id="btnAdd"/>
+				</div>				
+				<span id="alert"></span>
+			</div>
+			<div class="del">
+				<h3>删除供应商</h3>
+				<label>供应商名称：<input type="text" id="delSup"/></label>
+				<input type="button" value="确定删除" id="btnDelete"/>
+				<span id="delAlert"></span>				
+			</div> 
+		</div>
+		
+		
+	<script src="lib/jquery-3.2.1.js"></script>
+	<script src="../api/js/global.js"></script>
+	<script>
+		jQuery(function($){
+			//查询
+			$("#btnSearch").on("click",function(){
+				$.post(global.apiBaseUrl+"selectSupplier",
+				{supplierName:$("#searchSupplier").val()},function(res){
+					var data = res.data;
+					var content = document.querySelector(".content");
+					content.innerHTML = data.map(function(item){
+						return `<table border="1px solid #cccccc">
+									<tr>
+										<td>ID</td>
+										<td>供应商名称</td>
+										<td>商品名称</td>
+										<td>联系人</td>
+										<td>联系电话</td>
+										<td>地址</td>
+										<td>开户银行</td>
+										<td>商品类型</td>
+										<td>操作</td>
+									</tr>
+									<tr>
+										<td>${item.ID}</td>
+										<td>${item.supplierName}</td>
+										<td>${item.productName}</td>
+										<td>${item.person}</td>
+										<td>${item.phone}</td>
+										<td>${item.address}</td>
+										<td>${item.bankAccount}</td>
+										<td>${item.productType}</td>
+										<td><input type="button" value="确定修改" id="edit"/></td>
+									</tr>
+								</table>`
+					}).join("");
+					
+					//点击单元格可修改内容
+					$(".content")[0].onclick =function(e){
+						e = e || window.event;
+						var target = e.target || e.srcElement;
+						if(target.tagName.toLowerCase() == "td"){
+							var input = document.createElement("input");
+							input.type = "text";
+							input.value = target.innerText;
+							
+							target.innerHTML = "";
+							target.appendChild(input);
+							
+							input.focus();
+							//input失去焦点保存当前内容
+							input.onblur = function(){
+								target.innerHTML = input.value;
+							}
+							//点击确定按钮将当前信息发送到数据库
+							
+							$("#edit").on("click",function(){
+								$contentTr = $("table").find("tr").eq(1);
+								$content = $contentTr.find("td");
+								$.post(global.apiBaseUrl + "updateSupplier",
+								{
+									ID:$content[0].innerText*1,
+									supplierName:$content[1].innerText,
+									productName:$content[2].innerText,
+									person:$content[3].innerText,
+									phone:$content[4].innerText,
+									address:$content[5].innerText,
+									bankAccount:$content[6].innerText,
+									productType:$content[7].innerText
+								}
+								,function(res){
+									console.log(res);
+								})
+							})
+							
+						}
+					}
+					
+				})
+			});
+			//添加
+			$("#btnAdd").on("click",function(){
+				$.post(global.apiBaseUrl+"addSupplier",
+				{
+					supplierName:$("#addSupName").val(),
+					productName:$("#addSupPro").val(),
+					person:$("#addSupPerson").val(),
+					phone:$("#addSupPhone").val(),
+					address:$("#addSupAddress").val(),
+					bankAccount:$("#addSupBank").val(),
+					productType:$("#addSupType").val()
+				},function(res){
+					if(res.status == true){
+						var alert = document.getElementById("alert");
+						alert.innerText = "更新成功！";
+					}
+				});
+			});
+			//删除
+			$("#btnDelete").on("click",function(){
+				$.post(global.apiBaseUrl + "deleteSupplier",
+				{supplierName:$("#delSup").val()},function(res){
+					console.log(res);
+					if(res.status == true){
+						var delAlert = document.getElementById("delAlert");
+						delAlert.innerText = "删除成功！"
+					}
+				})
+			});
+		});
+	</script>
+	</body>
+</html>

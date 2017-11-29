@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+            <style type="text/css">
+            div,body,h1,h2,h3,h4,h5,h6,p,main,select,nav,ul,li,ol,li,dl,dt,dd{
+                    margin:0;
+                    padding:0;
+                }
+                html,body{
+                    height:100%;
+                    background:rgba(0,191,255,0.5);
+
+                }
+                #login{
+                    height:420px;
+                    width:420px;
+                    background:white;
+                    position:absolute;
+                    top:50%;
+                    left:50%;
+                    transform:translate(-50%,-50%);
+                }
+                h1{
+                    margin-top:50px;
+                    font-size:30px;
+                    text-align:center;
+                    margin-bottom: 16px;
+                }
+                #li_inp1,#li_inp2,#li_btn{
+                    border:0 none;
+                    display:block;
+                    height:50px;
+                    width:100%;
+                    box-sizing: border-box;
+                    padding-left: 15px;
+                    border-radius: 5px;
+                }
+                p:nth-of-type(2), p:nth-of-type(3){
+                    height:50px;
+                    width:340px;
+                    margin:0 auto;
+                    border:1px solid #ccc;
+                    margin-bottom: 26px;
+                    border-radius: 5px;
+
+                }
+                p:nth-of-type(4){
+                     height:50px;
+                    width:340px;
+                    margin:0 auto;
+                    border-radius: 5px;
+
+
+                }
+                #li_btn{
+                    background:#27A9E3;
+                    color:white;
+                    cursor:pointer;
+                }
+                #istrue{
+                    width:340px;
+                    margin:0 auto;
+                    font-size: 12px;
+                    color:red;
+                    height:14px;
+                    margin-bottom: 10px;
+                }
+                
+            </style>
+    
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <div id="login">
+                <h1>超市管理系统</h1>
+            <p id="istrue"></p>
+            <p><input type="inp1" id="li_inp1" placeholder="用户名"/></p>
+            <p><input type="password" id="li_inp2" placeholder="密码" /></p>
+            <p><button id="li_btn">登录</button></p>
+         </div>
+
+    <script >
+            document.addEventListener('DOMContentLoaded', function(){
+
+
+                    var btn=document.querySelector('#li_btn');
+                    var inp1=document.querySelector('#li_inp1');
+                    var thep=document.querySelector('#istrue');
+                    var inp2=document.querySelector('#li_inp2');
+                    
+                        btn.onclick=function(){
+                          var xhr = new XMLHttpRequest();
+                          xhr.onload=function(data){
+                            console.log(xhr.responseText);
+                                if(xhr.responseText!="user_err"&&xhr.responseText!="pass_err"){
+                                    var date=new Date();
+                                    date.setDate(date.getDate()+7);
+                                    var arr=[];
+                                    arr.push(inp1.value);
+                                    arr.push(xhr.responseText);
+                                    arr=JSON.stringify(arr);
+                                    document.cookie="user="+arr+";expires="+date.toString()+";path=/";
+                                    location.href="http://localhost:88/index.html";
+                                }else if(xhr.responseText=='user_err'){
+                                    thep.innerHTML='用户名错误';
+                                }else if(xhr.responseText=='pass_err'){
+                                    thep.innerHTML="密码错误";
+                                }
+                                     
+                                    
+
+                                
+                          }
+                          xhr.open('get','http://localhost:88/login?user='+inp1.value+'&&password='+inp2.value,true);
+                    
+                          xhr.send();
+                        
+
+                        }
+
+
+              
+
+
+            })
+    </script>
+    </body>
+</html>
