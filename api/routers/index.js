@@ -4,7 +4,7 @@ var bp = require('body-parser');
 var path=require('path');
 
 var powerRouter=require('./power');
-
+var productsRouter = require('./products');
 
 
 
@@ -31,7 +31,7 @@ module.exports = {
         // memberRouter.register(app);
         // trackerRouter.register(app);
         powerRouter.register(app);
- 
+        productsRouter.register(app);
 
         app.listen(_port,function(){
           console.log(_port);

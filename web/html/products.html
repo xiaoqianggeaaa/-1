@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>产品信息</title>
+    <link rel="stylesheet" type="text/css" href="../css/base.css" />
+    <link rel="stylesheet" type="text/css" href="../css/products_p.css" />
+    <script src="../lib/jquery-3.2.1.js" ></script>
+    <script src="../js/global.js"></script>
+</head>
+<body>
+    <div id="vessel">
+        <div id="zhez"></div>
+        <div id="redact">
+           <h3>商品编辑<span>&times;</span></h3>
+           <p><span>商品编号：</span><input type="text" /></p>
+           <p><span>商品名称：</span><input type="text" /></p>
+           <p><span>商品类型：</span><input type="text" /></p>
+           <p><span>商品规格：</span><input type="text" /></p>
+           <p><span>商品价格：</span><input type="text" value='0.00'/></p>
+           <p><span>会员价格：</span><input type="text" value='0.00'/></p>
+           <p><span>进货价格：</span><input type="text" value='0.00'/></p>
+           <p><span>库存数量：</span><input type="text" value='0'/></p>
+           <p><span>上架数量：</span><input type="text" value='0'/></p>
+           <p><span>供应商：</span><input type="text" /></p>
+           <p><button>保存</button></p>
+        </div>
+        <h5>首页 &gt; 产品信息</h5> 
+        <div id="cz_p">
+            <select name="tiaojian" id="tiaojian">
+                <option value="name">商品名称</option>
+                <option value="barcode">商品编号</option>
+                <option value="type">商品类型</option>
+                <option value="supplier">供应商</option>
+            </select>
+            <input type="text" id="txt" /> <input type="button" value="查询" id="refer" /> <input type="button" value="添加商品" id="addbtn" /> <input type="button" value="所有商品" id="allproducts" /> <input type="button" value="新品入库" id="nowpros" />
+        </div>
+
+        <div id="sheet">
+            <table>
+                <thead>
+                    <tr><th>商品编号</th><th>商品名称</th><th>商品类型</th><th>商品规格</th><th>商品价格</th><th>会员价格</th><th>进货价格</th><th>库存数量</th><th>上架数量</th><th>供应商</th><th>操作</th></tr>
+                </thead>
+                <tbody>
+                    <!-- <tr><td>343sdfsdj243l23</td><td>dada</td><td>18</td><td>play</td><td><button>修改</button></td></tr> -->
+                </tbody>
+            </table>
+            <div class="pagebtn">
+                <i>&lt;</i>
+                <i>&gt;</i>
+                <div class="page_p">   
+                    <div id="paging"><!-- <span>1</span><span>2</span><span>3</span> --></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="../js/products_p.js"></script>
+</body>
+</html>

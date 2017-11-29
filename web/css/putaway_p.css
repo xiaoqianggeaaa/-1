@@ -1,0 +1,19 @@
+#vessel{width:1178px;height:564px;position: relative;}
+#vessel #cz_p{padding:10px 50px;}
+#vessel #cz_p #tiaojian{height:22px;}
+#vessel #sheet{height:480px;position: relative;}
+#vessel #sheet table{border-collapse:collapse;width:1148px;}
+#vessel #sheet table thead{background-color:#ddd;}
+#vessel #sheet table tr th,#vessel #sheet table tr td{border:1px solid #000;text-align:center;line-height:28px;height:28px;overflow:hidden;white-space:nowrap;}
+#vessel #sheet table tr td i{display:inline-block;width:20px;height:20px;margin:0 5px;font-size:16px;background-color:#ccc;cursor:pointer;line-height:20px;}
+#vessel #sheet table tr td span{display:inline-block;width:40px;}
+#vessel #sheet table .active{background:#ddd;}
+#vessel #sheet .pagebtn{position:absolute;right:80px;bottom:10px;height:21px;}
+#vessel #sheet .pagenone{display:none;}
+#vessel #sheet .pagebtn .page_p{position: relative;width:120px;height:21px;overflow:hidden;}
+#vessel #sheet .pagebtn #paging{position: absolute;height:21px;}
+#vessel #sheet #paging span,#vessel #sheet .pagebtn i{display:inline-block;width:20px;height:20px;background-color:#ccc;line-height:20px;text-align:center;margin:0 5px;cursor:pointer;font-size:16px;}
+#vessel #sheet .pagebtn i{position: absolute;top:1px;height:21px;}
+#vessel #sheet .pagebtn i:nth-child(1){left:-28px;}
+#vessel #sheet .pagebtn i:nth-child(2){right:-28px;}
+#vessel #sheet #paging span.gaol{background-color:orange;color:#fff;}
