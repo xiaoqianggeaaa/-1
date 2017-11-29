@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="js/qrious.js"></script>
+        <script src="./lib/jquery-3.2.1.js"></script>
+
+
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" id="vp"/>
+         <!-- 
+            1.引入js代码，记得加id名给meta。html字体大小不需要自己手动设置。
+            2.那么此时要去浏览器看一下，当前开发设备下的html字体大小是多少，把插件转换的数字改成多少
+            3.直接做页面，量到多少写多少，它会自动转换成rem.记得转换base.css里面的px
+        -->
+        
+        <script type="text/javascript">
+            // 把尺寸放大N倍（N是window.devicePixelRatio）
+            var wd = document.documentElement.clientWidth*window.devicePixelRatio/10;
+            //物理像素*设备像素比=真实像素--------(百分比布局需要删除这段代码)
+            document.getElementsByTagName("html")[0].style.fontSize = wd + "px";
+            // 把屏幕的倍率缩小到N分之一（N是window.devicePixelRatio）
+            var scale = 1/window.devicePixelRatio;
+            var mstr = 'initial-scale='+ scale +', maximum-scale='+ scale +', minimum-scale='+ scale +', user-scalable=no';
+            document.getElementById("vp").content = mstr;
+        </script>
+
+
+
+        <style type="text/css">
+            #yz_header{height:100px;border-bottom:5px dotted #ddd;;text-align: center;font-size:50px;line-height:100px;}
+            .shoppingCart{font-size:40px;width:100%;text-align: center;}
+            .shoppingCart td{border-bottom:2px solid #ddd;}
+            .shoppingCart tfoot{font-size:25px;}
+            .shoppingCart tfoot{height:50px;}
+            
+            .yz_footer{position:relative;}
+            .yz_footer p{font-size:30px;padding-left:20px;}
+            #Ipay{font-size:50px;padding:20px;position:absolute;right:5%;}
+            .yz_tip,.yz_completeTime{font-size:34px;padding:5px 10px;margin:0;}
+        </style>
+
+
+        <script src="./lib/global.js"></script>
+    </head>
+    <body>
+
+        <h2 id="yz_header">手机支付页面</h2>
+        <table class="shoppingCart">
+            <thead>
+                <tr>
+                    <td>序号</td>
+                    <td>商品名称</td>
+                    <td>单价</td>
+                    <td>数量</td>
+                    <td>计算</td>
+                </tr>
+            </thead>
+            <tbody></tbody>
+            <!-- <tfoot></tfoot> -->
+        </table>
+        <div class="yz_footer"></div>
+        <p class="yz_tip"></p>
+        <p class="yz_completeTime"></p>
+
+        <script type="text/javascript">
+
+        // 连接后端服务
+        var socketObj = new WebSocket('ws://172.29.2.1:99');
+        
+        socketObj.onopen = function(){
+            $('.yz_tip').text(' (^_^)∠※ 服务器连接成功！')
+        };
+        socketObj.onclose = function(){
+            $(".yz_tip").text('‘(*>﹏<*)′服务器断开。')
+        };
+
+        var LinkURL = window.location.search.slice(1),params={};
+
+        LinkURL.split('&').forEach(function(item){
+            var arr = item.split('=');
+            params[arr[0]] = arr[1];
+        });
+        // console.log(params,params.ranger);
+
+        // 判断是否有信息传过来了
+        if(LinkURL){
+
+            $.get(global.apiBaseUrl + 'getTracker',{ranger:params.ranger},function(res){
+                if(res.data.length<=0){
+                    alert("数据未录入！");
+                    return;
+                }else{
+                    var list = JSON.parse(res.data[0].data);
+
+                    var content = list.map(function(item){
+                        return `<tr>
+                        <td>${item.num}</td>
+                        <td>${item.name}</td>
+                        <td>${item.price}</td>
+                        <td>${item.qty}</td>
+                        <td>${item.sum}</td>
+                        </tr>`;
+
+                    })
+                    $('.shoppingCart').append($('tbody').html(content));
+
+                    var result = res.data[0];
+                    var cont = `
+                        <p>动态名：${result.ranger}</p>
+                        <p>支付状态：<span class="payStatus">${result.status}</span></p>
+                        <p>本次消费应付款：<span style="font-size:40px;">￥ ${result.total}</span></p>
+                        <p>消费时间：${result.date}</p>
+                        <input type="button" value="点击支付" id="Ipay"/>
+                    `;
+                    ($('.yz_footer').html(cont));
+                    
+                    if(socketObj){
+                        // 判断付款状态
+                        if(res.data[0].status == '已支付'){
+                            $('.payStatus').text('已支付').css({'font-size':'40px','color':'#f00'});
+                            $('#Ipay').remove();
+                            $('.yz_tip').text(' (^_^)∠※ 感谢您的光顾，欢迎下次再来！')
+                        }else if(res.data[0].status == '待付款'){
+
+                            $('#Ipay').click(function(){
+                                // 后台修改支付状态
+                                $.post(global.apiBaseUrl + 'updateTracker',{ranger:params.ranger,status:"已支付"},function(res){
+                                    // console.log(res)
+                                    if(res.data.ok){
+                                        var date = new Date();
+                                        var ymd = date.toLocaleDateString();
+                                        var completeTime = `${ymd} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+                                        $('.payStatus').text('支付成功！').css({'font-size':'40px','color':'#f00'});
+                                        $('.yz_completeTime').text('完成支付时间：'+completeTime);
+                                        $('#Ipay').remove();
+                                        $('.yz_tip').text(' (^_^)∠※ 感谢您的光顾，欢迎下次再来！')
+                                        alert('谢谢您本次消费，祝您生活愉快！');
+                                    }else{
+                                        alert('加载失败，请重新刷新页面！')
+                                    }
+                                })
+                                socketObj.send(params.ranger);//点击支付发送用户名
+                            });
+                            socketObj.onmessage = function(_mess){
+
+                                if(_mess.data.slice(-2) == 'OK' && _mess.data.slice(0,-2) == params.ranger){
+
+                                }else if(_mess.data.slice(-2) == 'OK' && _mess.data.slice(0,-2) !== params.ranger){
+                                    $('.yz_completeTime').text('^_^; 支付失败！');
+                                    alert('^_^; 支付失败！')
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+
+        }else{
+            alert('出现未知错误，请及时联系技术人员！')
+        }
+
+
+
+
+
+
+        // var socketObj = null;
+
+        // $('#btnOnLine').click(function(){
+        //     socketObj = new WebSocket('ws://10.3.135.30:99');
+        //     socketObj.onopen = function(){
+        //         $('#conn-state').text('服务器连接成功')
+        //     }
+        //     socketObj.onclose = function(){
+        //         $("#conn-state").text('服务器已断开')
+        //     };
+        //     socketObj.onmessage = function(_mess){
+        //         console.log(_mess)
+        //         $('<li/>').text(_mess.data).appendTo('ul');
+        //     }
+        // })
+        // $("#btnSend").click(function(){
+        //     if(socketObj){
+        //         socketObj.send($('#messageBox').val());
+        //     }
+        // })
+        
+        // $('#btnOffLine').click(function(){
+        //     $("#conn-state").text('您已推出聊天室')
+        // })
+
+        </script>
+    </body>
+</html>
+
+<!-- 注意：由于本次项目没有录入，收银员，完成支付时间 到消费者订单信息数据库内，相应功能不能实现 -->

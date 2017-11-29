@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Payment</title>
+    <link rel="stylesheet" type="text/css" href="./css/base.css" />
+
+    <script src="./lib/jquery-3.2.1.js"></script>
+    <script src="./lib/global.js"></script>
+    <script src="./js/qrious.js"></script>
+    <style type="text/css">
+        #payment{width:1178px;height:563px;border:1px solid #ddd;padding:30px;box-sizing: border-box;}
+        #payment .bill{border:1px solid #ddd;width:60%;height:500px;}
+        #payment .bill h3{padding:5px;text-align: center;}
+        #payment .bill .receipt,.sku{text-align: center;display:flex;justify-content:space-around;}
+        #payment .bill .receipt span,.sku span{padding:5px 0;border-bottom:1px solid #ddd;width:80px;}
+        
+        /*商品列表*/
+        #payment .bill .goodsList{height:380px;overflow-y:auto;border-bottom:1px solid #ddd;}
+        #payment .bill .goodsList .goodsQty{font-style:normal;}
+        #payment .bill .goodsList .sub,.add{position:absolute;display: block;width: 28px;height: 28px;background:#ddd;bottom:2px;left:0;text-align: center;line-height: 28px;}
+        #payment .bill .goodsList .add{left:auto;right:0;}
+        #payment .bill .sku .delGoods:hover,.add:hover,.sub:hover,.delAll:hover{cursor:pointer;color:#f00;}
+        
+        /*结算*/
+        #payment .bill .count{padding:5px 20px 0 0;text-align: right;position:relative;}
+        #payment .bill .count .delAll{width:60px;height:30px;text-align: center;line-height: 30px;position:absolute;left:10px;top:10px;border:1px solid #ddd;}
+    
+
+        /*操作界面*/
+        #payment .operation{border:1px solid #ddd;width:35%;height:480px;padding:10px;position:relative;}
+        #payment .operation .JobNumber{top:5px;left:5px;font-size:12px;padding:0 5px;}
+        #payment .operation .JobNumber .JobNumberRight{float:right;}
+        #payment .operation .firstBox h3{text-align: center;padding:5px;font-weight:bold;}
+        #payment .operation .firstBox {text-align: center;padding:5px;}
+        #payment .operation .firstBox #barcode,#member{padding-left:5px;}
+        #payment .operation .firstBox p{padding:5px;border:1px dotted #FFD39B;margin:5px;background:#FFFFF0;border-radius:2px;}
+
+        #payment .operation .firstBox label{display: inline-block;width:160px;text-align: right;}
+        #payment .operation .firstBox label span{color:#FF8C00;font-size:12px;float:left;}
+
+        #payment .operation #qr{border:1px solid #ddd;width:250px;height:250px;padding:5px;position:absolute;left:50%;bottom:3%;transform:translateX(-50%);}
+        #payment .operation .temple{border:1px dotted #FFD39B;width:40px;height:240px;position:absolute;right:2%;bottom:3%;font-size:12px;text-align: center;}
+        
+
+        #payment .operation .temple p{height:23px;line-height:23px;border-bottom:1px dotted #FFD39B;}
+        #payment .operation .temple .templeUL li{position:relative;}
+        #payment .operation .temple .templeUL li a{display: block;width: 100%;height:30px;line-height:30px;border-bottom:1px dotted #FFD39B;}
+        #payment .operation .temple .templeUL li a:hover{color:red;background:#fffff0;font-size:16px;cursor:pointer;font-weight:bold;}
+
+        #payment .operation .temple .templeUL li .removeTemple{position:absolute;color:#a1a1a1;right:-36px;top:12px;height:14px;line-height:14px;}
+        #payment .operation .temple .templeUL li .removeTemple:hover{font-weight:bold;cursor:pointer;font-size:12px;color:red;}
+    </style>  
+</head>
+<body>
+    <div id="payment">
+        <!-- 账单信息 -->
+        <div class="bill fl">
+            <h3>XXX超市--商品清单</h3>
+        </div>
+
+        <!-- 收银操作界面 -->
+        <div class="operation fr">
+            <p class="JobNumber">
+                工作号：<span class="user">未获取到token</span>
+                <span class="JobNumberRight">
+                    登陆状态：
+                    <span class="userStatus">离线</span>
+                </span>
+            </p>
+            <div class="firstBox">
+                <h3>收银界面</h3>
+                <label for="barcode"><span>步骤1.</span>商品条形码：</label><input type="text" id="barcode" value="1231231231231" placeholder="例如：1231231231231">
+                <br/>
+                <label for="member"><span>步骤2.</span>会员号码：</label><input type="text" id="member" value="12312312312" placeholder="例如：12312312312">
+                <br/>
+                <input type="button" value="生成二维码"/ id = "createQR">
+                <input type="button" value="打印小票" id="canPrint" disabled="disabled"/>
+                <input type="button" value="挂单" disabled="disabled" id="hangUp"/>
+                <!-- <input type="button" value="撤单" disabled="disabled"/> -->
+                <p>用户级别：<span class="curGrade">普通游客</span></p>
+                <p>支付状态：<span class="curStatus">待付款...</span></p>
+            </div>
+            <canvas id="qr">
+                生成二维码
+            </canvas>
+
+            <!-- 新增挂单栏目 -->
+            <div class="temple">
+                <p>挂单号</p>
+                <ul  class="templeUL"></ul>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        $(function(){
+
+            var socketObj = new WebSocket('ws://172.29.2.1:99');
+            socketObj.onopen = function(){
+                $('.userStatus').text('在线')
+            };
+            socketObj.onclose = function(){
+                $(".userStatus").text('离线')
+            };
+
+
+            // 创建小票--表头
+            var tableHeader = `<span>序号</span><span>商品名称</span><span>单价</span><span>数量</span><span>计算</span><span>操作</span>`;
+            $('.bill').append($('<p/>').addClass('receipt').html(tableHeader));
+            // 创建商品列表
+            $('<div/>').addClass('goodsList').appendTo($('.bill'));
+            $('<p/>').addClass('count').appendTo($('.bill'));
+
+            // 输入条形码
+            $('#barcode').focus().keyup(function(e){
+
+                if(e.keyCode == 13){
+
+                    $.post(global.apiBaseUrl + 'getproduct', {barcode: $(this).val()}, function(res){
+                        var result = res.data[0];
+
+
+                        if(result){//判断是否有该商品
+
+
+                            // 生成商品列表
+                            var SKU = $('.goodsList').find($('.sku'));
+                            var curidx = SKU.length;
+
+                            var curprice = result.price;// 非会员价(代码跟封装AddGoods函数重复)
+                            
+                            if(curidx>0){
+                                var status = 0;
+                                // 判断列表内是否已经存在该商品
+                                for(var i=0;i<curidx;i++){
+                                    var curID = $('.sku')[i].children[1].getAttribute('data-id');
+                                    if(curID==result.barcode){
+                                        status = 1;
+                                        curGoods = i;
+                                        break;
+                                    }
+                                }
+
+                                if(status){
+                                    var curQty = $($('.sku')[i].children[3]).find('.goodsQty')[0];
+                                    var prevQty = curQty.innerText*1;
+                                    curQty.innerText = prevQty+1;
+
+                                    $('.totalPrices')[i].innerText=(curprice*curQty.innerText).toFixed(2);
+                                }else{
+                                    // 更新商品清单
+                                    AddGoods(result);//调用方法
+                                }
+
+                            }else if(curidx == 0){
+                                // 更新商品清单
+                                AddGoods(result);//调用方法
+                            }
+                            // 更新录入时间
+                            inputTime();//调用方法
+
+                            $('#barcode').val('').focus();
+
+                            // 判断能否挂单
+                            canHangUp();//调用方法
+
+                            // 计算应付款
+                            FigureUp();//调用方法
+
+                        }else{
+                            alert('商品信息未录入。');
+                            $('#barcode').val('').focus();
+                        }
+                    })
+
+                    
+                }
+            });
+
+            // 判断是否会员
+            $('#member').keyup(function(e){
+                if(e.keyCode == 13){
+                    // 请求是否会员
+                    var memberNo = $('#member').val();
+                    isMember(memberNo);//调用方法
+                }
+            })
+            // 生成总价节点
+            var date = new Date;
+            var ymd = date.toLocaleDateString();
+            var content2 = `
+                <b class="delAll">清空</b>
+                <span>${'合计= ￥'}</span>
+                <span class="AllPrices">0.00</span><br>
+                <span class="date">${ymd} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}</span>
+                `;
+            $('.count')[0].innerHTML = content2;
+
+            // 商品删除
+            $('.goodsList').on('click','.delGoods',function(){
+                var tarParents = this.parentNode;
+                tarParents.parentNode.removeChild(tarParents);
+            });
+
+            // 单类商品数量增减
+            $('.goodsList')[0].onclick = function(e){
+                var tar = e.target.className.toLowerCase();
+                var goodsQtyNode = e.target.parentNode.children[1];
+                var goodsQty = goodsQtyNode.innerText;
+                window.event? window.event.returnValue = false : e.preventDefault();
+                if(tar == 'sub' || tar == 'add' ){
+                    var total = e.target.parentNode.parentNode.children[4];
+                    var price = e.target.parentNode.parentNode.children[2].innerText;
+                    if(tar == 'sub'){
+                        if(goodsQty==1) return;
+                        goodsQty--;
+                        goodsQtyNode.innerText = goodsQty;
+                        //算价钱
+                        Clearing();
+                        // 更新录入时间
+                        inputTime();//调用方法
+                    }else if(tar == 'add'){
+                        goodsQty++;
+                        goodsQtyNode.innerText = goodsQty;
+                        //算价钱
+                        Clearing();
+                        // 更新录入时间
+                        inputTime();//调用方法
+                    }
+                }
+
+                function Clearing(){
+                    // 计算当前商品总价
+                    total.innerText = (price*goodsQtyNode.innerText).toFixed(2);
+                    // 计算应付款
+                    FigureUp();//调用方法
+                }
+            }
+
+            // 清空列表
+            $('.delAll').click(function(){
+                $('.goodsList').text('');
+                canHangUp();//调用能否挂单判断方法
+            })
+
+            // 点击生成二维码
+            $('#createQR').click(function(){
+                var len = $('.goodsList').children('.sku').length;
+                if(len>0){
+
+                    // 调用函数-->获取商品清单信息
+                    var lists = getGoodsList();
+                    console.log(lists)
+                    var Ranger = lists[lists.length-1].Ranger;
+                    // 消费记录--录入数据库
+                    var data = JSON.stringify(lists.slice(0,-1));
+
+                    // console.log({payer: lists[lists.length-1].payer,date: lists[lists.length-1].date,status: lists[lists.length-1].status,total: lists[lists.length-1].total,ranger:Ranger,data:data})
+
+                    $.post(
+                        global.apiBaseUrl + 'getTracker',
+                    {
+                        payer: lists[lists.length-1].payer,
+                        date: lists[lists.length-1].date,
+                        status: lists[lists.length-1].status,
+                        total: lists[lists.length-1].total,
+                        ranger:Ranger,
+                        data:data
+                    },
+                        function(res){//回调函数
+
+                        var LinkURL = '?' + 'payer='+lists[lists.length-1].payer + '&ranger='+Ranger;
+
+                        console.log(LinkURL);
+
+                        var link = global.apiBaseUrl.slice(0,-4);
+                        // console.log(link)
+                        const qr = new QRious({
+                            background: '#FFF8DC',
+                            foreground: '#483D8B',
+                            size: 290,
+                            element: document.getElementById('qr'),
+                            value: link+LinkURL//这个IP地址指向服务器的ip
+                        })
+                        
+                        // // 简单方式
+                        // new QRCode(document.getElementById('qr'), 'your content');
+
+                        // // 设置参数方式
+                        // var qrcode = new QRCode('qrcode', {
+                        //   text: 'your content',
+                        //   width: 256,
+                        //   height: 256,
+                        //   colorDark : '#000000',
+                        //   colorLight : '#ffffff',
+                        //   correctLevel : QRCode.CorrectLevel.H
+                        // });
+
+                        // // 使用 API
+                        // qrcode.clear();
+                        // qrcode.makeCode('new content');
+                    })
+
+                    // 接受广播，判断用户支付情况
+                    socketObj.onmessage = function(_mess){
+                        
+                        var curUser = $('.goodsList')[0].getAttribute('data-user');
+                        // 是否OK
+                        if(_mess.data.slice(0,-2) == curUser && _mess.data.slice(-2) == 'OK'){
+                            $('.curStatus').text('支付成功！').css('color','red');
+                            // 清空二维码
+                            cleanQR();
+                            // 清空商品列表
+                            $('.goodsList').html('');
+                            // 计算应付款
+                            FigureUp();//调用方法
+                            // 开放小票打印功能
+                            $('#canPrint').removeAttr("disabled");
+                            // 关闭挂单功能
+                            closeTemple();
+                            // var text = `XXX大型综合超市收银系统 \n**********************************\n商品名称：香烟\n 单品金额：100 元\n商品数量：10条\n总金额：1000元\n买单时间：2017--8-15 10：55：55 \n**********************************\n`;
+                            var marketName = 'XXX超市收银系统\n';
+                            var br = '**************************************\n';
+                            var line = '---------------------------------------------\n';
+                            var TheCartList = `   商品名称      单价      数量   \n`;
+                            for(var i=0;i<lists.length-1;i++){
+                                TheCartList += `    ${lists[i].name}    ${lists[i].price}   *   ${lists[i].qty}\n`;
+                            }
+
+                            var receipt = marketName+br+TheCartList+line+`总价：￥ ${lists[lists.length-1].total}\n结账时间：${lists[lists.length-1].date}\n`+br;
+
+                            // console.log(receipt);
+
+                            $('#canPrint').click(function(){
+                                $.post('http://10.3.135.67:81/print',{text:receipt},function(_res){
+
+                                // { state = False, message = 不能打印空文本！ }
+                                // { state = True }
+
+                                    // 目前不确定返回信息的具体格式，先做这两步判断-->需跟老师沟通！！！
+                                    if(_res.indexOf(',')>=0){
+                                        var Obj = {};
+                                        _res.replace(/[\s|\{|\}]*/gi,'').split(',').forEach(function(item){
+                                            var obj = {};
+                                            var arr = item.split('=');
+                                            Obj[arr[0]] = arr[1];
+                                            return Obj;
+                                        });
+                                    }else{
+                                        var Obj = {};
+                                        var Arr = _res.replace(/[\s|\{|\}]*/gi,'').split('=');
+                                        Obj[Arr[0]] = Arr[1];
+                                    }
+
+                                    if(Obj.state){
+                                        $('#canPrint')[0].setAttribute('disabled', 'disabled');// 关闭打印功能
+                                        $('.curGrade').css('color','#000').text('普通游客');
+                                        $('.curStatus').css('color','#000').text('待付款...');
+                                        closeTemple()//禁用挂单功能
+                                    }
+
+                                })
+                            })
+                        }
+
+                    }
+
+                }
+            })
+
+            // 点击生成挂单号
+            $('#hangUp').click(function(){
+                $('#member').val('');
+                var goodsList = getGoodsList();
+                // console.log(goodsList);
+                // 动画飞入挂单号
+                    // ...
+
+                var templeULLength = $('.templeUL').find('li').length;
+                var goodsListLength = goodsList.length-1;
+                var prevData = JSON.stringify(goodsList);
+
+                if($('.templeUL').find('li').length>6){
+                    alert('亲，最多能挂7单喔！');
+                    return;
+                }else{
+                    $('.templeUL').append($('<li/>').attr({
+                        'data-payer':goodsList[goodsListLength].Ranger,
+                        'data-prevdata':prevData
+                    }).append($('<a/>').text(templeULLength+1)).append($('<span/>').text('remove?').addClass('removeTemple')));
+                }
+                closeTemple()//禁用挂单功能
+                cleanQR();//清空二维码
+                $('.goodsList').text('');//清空商品列表
+                $('.AllPrices').text('0.00');//清空商品列表
+                $('.curGrade').text('普通游客').css('color','#000').removeAttr('data-payer','');//设置默认用户级别
+            })
+
+            // 侧边栏打开挂单内容
+            $('.templeUL').on('click','a',function(e){
+                var payer = this.parentNode.getAttribute('data-payer');
+                var prevData = JSON.parse(this.parentNode.getAttribute('data-prevdata'));
+
+                /*这里最好添加一个弹出提示：确认是否打开挂单内容，并清空当前商品清单*/
+                // console.log(payer,prevData);
+                $('.goodsList').html('');
+
+                for(var i=0;i<prevData.length-1;i++){
+                    $('.goodsList').append(
+                        `<p class="sku">
+                            <span>${prevData[i].num}</span>
+                            <span>${prevData[i].name}</span>
+                            <span>${prevData[i].price}</span>
+                            <span style="position:relative"><b class="sub"> &ndash;</b><i class="goodsQty">${prevData[i].qty}</i><b class="add">+</b></span>
+                            <span class="totalPrices">${prevData[i].sum}</span>
+                            <span class="delGoods">删除</span>
+                        </p>`
+                    );
+                    $('#barcode').focus();
+                    inputTime();
+                    FigureUp();
+                }
+
+                // 请求是否会员
+                var prevPayer = prevData[prevData.length-1].payer;
+                isMember(prevPayer);//调用方法
+
+                var prevRanger = prevData[prevData.length-1].Ranger;
+
+                
+                // $.post(global.apiBaseUrl + 'getTracker',{ranger:prevRanger,status:"撤单1"},function(res){
+                //     console.log(res)
+                //     if(res.data.result.ok){
+                //         console.log('本次操作：撤单1，成功！')
+                //     }else{alert('出现未知错误，请前台刷新页面，若仍未解决，请务必及时联系相关技术人员！')}
+                // });
+                var revoke1 = '撤单1';
+                Revoke(prevRanger,revoke1);
+            })
+            
+            // 手动撤单
+            $('.templeUL').on('click','.removeTemple',function(e){
+
+                $('.goodsList').html('');
+                $('.AllPrices').text('0.00')
+
+                var prevData = JSON.parse(this.parentNode.getAttribute('data-prevdata'));
+                var prevRanger = prevData[prevData.length-1].Ranger;
+                var revoke2 = '撤单2';
+                Revoke(prevRanger,revoke2);//后台删除记录
+
+                $(this.parentNode).remove();//删除挂单号
+                var templeLength = $('.templeUL').find('li').length;
+                for(var i=0;i<templeLength;i++){
+                    $($('.templeUL').find('li')[i]).find('a').text(i+1);
+                }
+            })
+
+        /*-------------------------函数封装区-----------------------*/
+
+            // 封装添加商品信息方法
+            function AddGoods(result){
+                // console.log(result)
+                var SKU = $('.goodsList').find($('.sku'));
+                var curidx = SKU.length;
+                var curprice = result.price;// 非会员价
+
+                // 增加商品项
+                var content1 = `<p class="sku">
+                <span>${curidx+1}</span>
+                <span data-id = "${result.barcode}">${result.name}</span>
+                <span data-vipprice=${result.vipprice}>${curprice.toFixed(2)}</span>
+                <span style="position:relative"><b class="sub"> &ndash;</b><i class="goodsQty">1</i><b class="add">+</b></span>
+                <span class="totalPrices">${curprice.toFixed(2)}</span>
+                <span class="delGoods">删除</span>
+                </p>`
+                $('.goodsList').append(content1);  
+            }
+            // 更新录入时间
+            function inputTime(){
+                var inputTime = new Date();
+                var Newymd = date.toLocaleDateString();
+                var dateText = Newymd +' '+ inputTime.getHours()+':'+inputTime.getMinutes()+':'+inputTime.getSeconds();
+                $('.date').html(dateText);
+            }
+            // 判断能否挂单
+            function canHangUp(){
+                if($('.goodsList').find('.sku').length>0){
+                    $('#hangUp').removeAttr("disabled");
+                }else{
+                    closeTemple()//禁用挂单功能
+                }
+            }
+            // 获取商品清单信息
+            function getGoodsList(){
+                var len = $('.goodsList').children('.sku').length;
+                var lists = [];
+                for(var i=0;i<len;i++){
+                    var lis = {};
+                    lis.num = $('.goodsList').children('.sku')[i].children[0].innerText;
+                    lis.name =$('.goodsList').children('.sku')[i].children[1].innerText;
+                    lis.price = $('.goodsList').children('.sku')[i].children[2].innerText;
+                    lis.qty = $('.goodsList').children('.sku')[i].children[3].children[1].innerText;
+                    lis.sum = $('.goodsList').children('.sku')[i].children[4].innerText;
+                    lists.push(lis);
+                }
+
+                /*动态生成消费用户名*/
+                var date = new Date();
+                var Ranger = 'user' + date.getTime();
+
+                $('.goodsList')[0].setAttribute('data-user', Ranger);
+
+                lists.push({total:$('.AllPrices').text(),date:$('.date').text(),status:'待付款',payer:$('.curGrade').attr('data-payer') || Ranger,Ranger:Ranger})
+
+                return lists;
+            }
+            // 计算应付款--封装
+            function FigureUp(){
+                var yourpayment = 0;
+                var len = $('.goodsList')[0].children.length;
+                if(len>0){
+                    for(var i=0;i<len;i++){
+                        yourpayment += $($('.goodsList')[0].children[i]).find('.totalPrices').text()*1;
+                    }
+                }
+                $('.AllPrices').text(yourpayment.toFixed(2));
+            }
+            // 判断是否会员
+            function isMember(member){
+                $.post(global.apiBaseUrl + 'getmember',{idx:member},function(res){
+                        if(res.state){
+                            if(res.data.length>0){
+                                $('.curGrade').text('在册会员').css('color','red').attr('data-payer',$('#member').val());//用户名放到用户级别那里
+                                $('#member').val(member);
+                                var len = $('.sku').length;
+
+                                for(var i=0;i<len;i++){
+                                    var vipPrice = $('.sku')[i].children[2].getAttribute('data-vipprice');
+                                    var curQty = $('.sku')[i].children[3].children[1].innerText;
+                                    $('.sku')[i].children[2].innerText = (vipPrice*1).toFixed(2);
+                                    
+                                    $('.totalPrices')[i].innerText=(vipPrice*curQty).toFixed(2);
+
+                                    // 计算应付款
+                                    FigureUp();
+                                }
+                            }else{
+                                // alert('当前号码不在会员名单内，建议用户升级会员权限！')
+                                $('.curGrade').text('普通游客');
+                                $('#member').val('');
+                            }
+                        }else{
+                            alert(res.message||'出现未知错误，请及时联系技术人员！');
+                            $('#member').val('');
+                        }
+                })
+            }
+            // 禁用挂单功能
+            function closeTemple(){
+                $('#hangUp').attr('disabled','disabled');
+            }
+            // 撤单类型
+            function Revoke(_ranger,_mess){
+                $.post(global.apiBaseUrl + 'getTracker',{ranger:_ranger,status:_mess},function(res){
+                    console.log(res)
+                    if(res.data.result.ok){
+                        console.log('本次操作：'+ _mess +'，成功！')
+                    }else{alert('出现未知错误，请前台刷新页面，若仍未解决，请务必及时联系相关技术人员！')}
+                });
+            }
+            // 清空二维码
+            function cleanQR(){
+                $('#qr')[0].getContext("2d").clearRect(0,0,$('#qr')[0].width,$('#qr')[0].height);
+            }
+                            
+})
+    </script>
+</body>
+</html>
+
+
+<!-- 注意事项 -->
+    <!-- 数据库路径E:\test\db -->
+    <!-- 文件只是练习，记得要先打开mongod.exe，在根目录打开node server，数据库名字不是项目中的db(以后要改的) -->
+
+    <!-- getGoodsList()中Ranger&payer相同——》存在问题 -->
+    
+    <!-- 撤单类型简介 -->
+    <!-- 撤单1：相当于用户放弃挂起的这份单，再按需判断是否重新建立购买信息 -->
+    <!-- 撤单2：表示用户购买商品已经录入到数据库，才撤单 -->

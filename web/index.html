@@ -66,13 +66,12 @@
                 </li>
                 <li>
                     <i class="iconfont">&#xe8ff;</i>
-                    <p>会员管理
+                    <p>管理员管理
                         <span class="iconfont">&#xe8e6;</span>
                     </p>
                     <ul class="second">
-                        <li>会员列表</li>
-                        <li>等级管理</li>
-                        <li>会员记录管理</li>
+                        <li id="li_master">管理员列表</li>
+                      
                     </ul>
                 </li>
                 <li>
@@ -86,18 +85,8 @@
                         <li>系统日志</li>
                     </ul>
                 </li>
-                <li>
-                    <i class="iconfont">&#xe8fb;</i>
-                    <p>管理员管理
-                        <span class="iconfont">&#xe8e6;</span>
-                    </p>
-                    <ul class="second">
-                        <li>权限管理</li>
-                        <li>管理员列表</li>
-                        <li>个人信息</li>
-                    </ul>
-                </li>
-                <li>
+      
+                <li  class="Cashier">
                     <i class="iconfont">&#xe95f;</i>
                     <p>收银管理
                         <span class="iconfont">&#xe8e6;</span>
@@ -107,123 +96,123 @@
         </div>
                 </div>
                 <div id="content_right">
-                    <h4>
-                        <span class="h4_img"></span>
-                        <span>首页>会员列表</span>
-                    </h4>
-                    <h3>
-                        搜索查询
-                    </h3>
-                        <div class="select clearfix">
+                        <h4>
+                            <span class="h4_img"></span>
+                            <span>首页>会员列表</span>
+                        </h4>
+                        <h3>
+                            搜索查询
+                        </h3>
+                            <div class="select clearfix">
+                                <span>
+                                    <label for="li_inp1">会员名称 </label>
+                                    <input type="text"id="li_inp1" placeholder="输入会员名称、电话、邮箱"/>
+                                </span>
+                                 <span>
+                                    <label for="li_inp2">添加日期 </label>
+                                    <input type="date" id="li_inp2" />
+                                </span>
+                                <span><button id="li_btn">查询</button></span>
+                            </div>
+                        <div class="li_btn">
+                                <span id="li_add">添加用户</span>
+                                <span id="li_dele">批量删除</span>
+                                <span class="couts">共0条</span>
+                        </div>
+                        <div class="showit clearfix">
+                            <ul class="show_ul1 clearfix">
+                            <li>
+                                <span>每页显示的条数：</span>
+                                <span>
+                                    
+                                    <select name="showselect" id="showselect" class="sele1">
+                                        <option value="1">1</option>
+                                        <option value="1">2</option>
+                                        <option value="1">3</option>
+                                        <option value="1">4</option>
+                                        <option value="1">5</option>
+                                        <option value="1">6</option>
+                                        <option value="1">7</option>
+                                        <option value="1">8</option>
+                                        <option value="1">9</option>
+                                        <option value="1">10</option>
+                                        <option value="1">11</option>
+                                    </select>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="li_clear"><button id="li_clear">清空当前表</button></span>
+                            
+                            </li>
+                            </ul>
+                        </div>
+
+                        <table id="li_table">
+                            <tr>
+                                <th><input type="checkbox" id="all" checked="checked" /></th>
+                                <th>ID</th>
+                                <th>用户名</th>
+                                <th>性别</th>
+                                <th>手机</th>
+                                <th>邮箱</th>
+                                <th>地址</th>
+                                <th>加入时间</th>
+                                <th>等级</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </table>
+                        <p class="li_pages"></p>
+                 <div id="luru">
+                    <div class="luru">
+                        <h5 class="clearfix">
+                         <span>添加管理员</span>
+                         <span id="isclose">&times;</span>
+                         </h5>
+                        <p>
+                            <label for="li_admin">管理员 </label><input type="text" id="li_admin" />
+                        </p>
+                        <p>
+                        <label for="li_pas">初始密码 </label><input type="password" id="li_pas" placeholder="密码"/>
+                        </p>
+                        <p>
+                        <label for="li_word">确认密码 </label><input type="password" id="li_word" placeholder="确认密码" />
+                        </p>
+                       <p>
+                            <span>性别：</span>
                             <span>
-                                <label for="li_inp1">会员名称 </label>
-                                <input type="text"id="li_inp1" placeholder="输入会员名称、电话、邮箱"/>
+                            <input type="radio" name="li_sex" class="li_sex"  checked="checked" />
+                            保密
                             </span>
                              <span>
-                                <label for="li_inp2">添加日期 </label>
-                                <input type="date" id="li_inp2" />
+                            <input type="radio" name="li_sex" class="li_sex" />
+                                男
                             </span>
-                            <span><button id="li_btn">查询</button></span>
-                        </div>
-                    <div class="li_btn">
-                            <span id="li_add">添加用户</span>
-                            <span id="li_dele">批量删除</span>
-                            <span class="couts">共0条</span>
-                    </div>
-                    <div class="showit clearfix">
-                        <ul class="show_ul1 clearfix">
-                        <li>
-                            <span>每页显示的条数：</span>
-                            <span>
-                                
-                                <select name="showselect" id="showselect" class="sele1">
-                                    <option value="1">1</option>
-                                    <option value="1">2</option>
-                                    <option value="1">3</option>
-                                    <option value="1">4</option>
-                                    <option value="1">5</option>
-                                    <option value="1">6</option>
-                                    <option value="1">7</option>
-                                    <option value="1">8</option>
-                                    <option value="1">9</option>
-                                    <option value="1">10</option>
-                                    <option value="1">11</option>
-                                </select>
+                           <span>
+                            <input type="radio" name="li_sex" class="li_sex" />
+                            女
                             </span>
-                        </li>
-                        <li>
-                            <span class="li_clear"><button id="li_clear">清空当前表</button></span>
-                        
-                        </li>
-                        </ul>
+                        </p>
+                        <p><label for="li_phone">手机 </label>
+                            <input type="number" id="li_phone" />
+                        </p>
+                        <p><label for="li_email">邮箱 </label>
+                            <input type="text" id="li_email" />
+                        </p>
+                        <p><span>角色 </span>
+                            <select name="li_role" id="li_role">
+                                <option value="超级管理员">超级管理员</option>
+                                <option value="管理员">管理员</option>
+                                <option value="栏目主编">会员</option>
+                            </select>
+                        </p>
+                        <p><span>备注：</span>
+                        <textarea name="area" id="area" cols="40" rows="8"></textarea>
+                        </p>
+                        <p><button id="li_isadd">添加 </button></p>
+                        <p class="isadd"></p>
                     </div>
-
-                    <table id="li_table">
-                        <tr>
-                            <th><input type="checkbox" id="all" checked="checked" /></th>
-                            <th>ID</th>
-                            <th>用户名</th>
-                            <th>性别</th>
-                            <th>手机</th>
-                            <th>邮箱</th>
-                            <th>地址</th>
-                            <th>加入时间</th>
-                            <th>等级</th>
-                            <th>状态</th>
-                            <th>操作</th>
-                        </tr>
-                    </table>
-                    <p class="li_pages"></p>
-             <div id="luru">
-                <div class="luru">
-                    <h5 class="clearfix">
-                     <span>添加管理员</span>
-                     <span id="isclose">&times;</span>
-                     </h5>
-                    <p>
-                        <label for="li_admin">管理员 </label><input type="text" id="li_admin" />
-                    </p>
-                    <p>
-                    <label for="li_pas">初始密码 </label><input type="password" id="li_pas" placeholder="密码"/>
-                    </p>
-                    <p>
-                    <label for="li_word">确认密码 </label><input type="password" id="li_word" placeholder="确认密码" />
-                    </p>
-                   <p>
-                        <span>性别：</span>
-                        <span>
-                        <input type="radio" name="li_sex" class="li_sex"  checked="checked" />
-                        保密
-                        </span>
-                         <span>
-                        <input type="radio" name="li_sex" class="li_sex" />
-                            男
-                        </span>
-                       <span>
-                        <input type="radio" name="li_sex" class="li_sex" />
-                        女
-                        </span>
-                    </p>
-                    <p><label for="li_phone">手机 </label>
-                        <input type="number" id="li_phone" />
-                    </p>
-                    <p><label for="li_email">邮箱 </label>
-                        <input type="text" id="li_email" />
-                    </p>
-                    <p><span>角色 </span>
-                        <select name="li_role" id="li_role">
-                            <option value="超级管理员">超级管理员</option>
-                            <option value="管理员">管理员</option>
-                            <option value="栏目主编">会员</option>
-                        </select>
-                    </p>
-                    <p><span>备注：</span>
-                    <textarea name="area" id="area" cols="40" rows="8"></textarea>
-                    </p>
-                    <p><button id="li_isadd">添加 </button></p>
-                    <p class="isadd"></p>
                 </div>
-            </div>
             </div>
     
             </div>
