@@ -86,7 +86,7 @@
   float: left;
   width: 192px;
   height: 100%;
-  background: red;
+
 }
 
 #content_right {
@@ -399,4 +399,80 @@
 #li_popup .li_popup p span:hover {
   background: #708090;
   cursor: pointer;
+}
+/*---------------------------------------*/
+
+#aside{
+  width: 189px;
+  height: 562px;
+  border:1px solid #CCCCCC;
+  border-top: none;
+  border-left:none.;
+}
+#aside .first{
+  width:100%;
+  height: 562px;
+  background: #F2F2F2;
+}
+#aside .first li{
+  width: 189px;
+  height: 39px;
+  border-bottom:1px solid #E5E5E5;  
+  background: #F9F9F9;
+  line-height: 39px;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+#aside .first li:hover{
+  background: #FFFFFF;
+}
+#aside .first li:hover i{
+  color: #438EB9;
+}
+#aside .first li:hover p{
+  color: #438EB9;
+}
+#aside .first li:hover span{
+  color: #438EB9;
+}
+#aside .first li:nth-child(1){
+  background: #62A8D1;
+}
+#aside .first li h3{
+  font-size: 14px;
+  color: #FFFFFF;
+  font-weight: normal;
+}
+#aside .first li i{
+  display: block;
+  float: left;
+  width:18px;
+  height: 15px;
+  color: #666666;
+  margin-left: 13px;
+}
+#aside .first li p{
+  float: left;
+  width: 133px;
+  margin-left: 12px;
+  font-size: 14px;
+  text-align: left;
+  color: #666666;
+}
+#aside .first li span{
+  float: right;
+  font-size: 10px;
+  color: #666666;
+}
+
+#aside .first li .second{
+  width: 189px;
+}
+#aside .first li .second li{
+  background: #ffffff;
+  height: 40px;
+  width: 100%;
+  padding: 0;
 }
