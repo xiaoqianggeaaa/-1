@@ -33,6 +33,7 @@ module.exports = {
         powerRouter.register(app);
 		 supplier.register(app);
 
+
         app.listen(_port,function(){
           console.log(_port);
         });

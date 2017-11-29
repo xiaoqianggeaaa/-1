@@ -7,5 +7,6 @@ requirejs.config({
 requirejs(['jQuery'],function(){
     requirejs(['index','dragable'],function(){
         requirejs(['cookie','supplier']);
+        requirejs(['cookie']);
     })
 })

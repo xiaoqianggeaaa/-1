@@ -5,7 +5,9 @@
 			
 			$('#content_right').html("").load('html/supplier.html #container');
 		})
-
+                $.get('http://localhost:88/ismy',function(res){
+                        console.log(res);
+                })
 
 
                        //添加管理员，会员
