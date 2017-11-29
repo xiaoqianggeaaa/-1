@@ -1,11 +1,12 @@
          $(function(){
 
 
-                // $.get('http://localhost:88/ismy',function(res){
-                //         console.log(res);
-                // })
-
-
+		$(".supplier").on("click",function(){
+			console.log(66);
+			
+			$('#content_right').html("").load('html/supplier.html #container');
+		})
+            
 
 
                        //添加管理员，会员

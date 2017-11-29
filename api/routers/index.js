@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 var bp = require('body-parser');
 var path=require('path');
-
+var supplier = require("./suppliers");
 var powerRouter=require('./power');
 var productsRouter = require('./products');
 
@@ -31,7 +31,12 @@ module.exports = {
         // memberRouter.register(app);
         // trackerRouter.register(app);
         powerRouter.register(app);
+<<<<<<< HEAD
         productsRouter.register(app);
+=======
+		 supplier.register(app);
+
+>>>>>>> 0a5c58c056c93732e01b95b7f1cf182aca644ff5
 
         app.listen(_port,function(){
           console.log(_port);
