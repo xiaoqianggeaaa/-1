@@ -1,0 +1,60 @@
+/*
+	公共样式
+		常用字体颜色
+		版心容器
+		左右浮动
+		。。。。。。
+*/
+
+//变量设置
+$show:'block';
+
+a {text-decoration:none;color:#666;}//将默认下划线去除
+// a:hover{color:#C81623;}
+h1,h2,h3,h4,h5,h6 {font-weight:normal;font-size:100%;} 
+/*设置h标签的大小，设置跟父亲一样大的字体font-size:100%;*/
+s,i,em{font-style:normal;text-decoration:none;}//取消文字倾斜
+body{font-size:16px;color:#666!important;}
+*{box-sizing:border-box;}
+
+.w {width: 1190px;margin:0 auto;}//版心容器
+
+
+//左右浮动
+.fl {float:left;}
+.fr {float:right;}
+
+//文字对齐方式
+.al {text-align:left;}
+.ac {text-align:center;}
+.ar {text-align:right;}
+
+//显示与隐藏
+.hide {display:none;}
+.show {display:$show;}
+
+//字体大小
+.font12{ font-size: 12px;}
+.font14{ font-size: 14px;}
+.font16{ font-size: 16px;}
+
+//清除浮动
+.cf::after{
+    content:"";
+    display: block;
+    height: 0;
+    clear: both;
+    overflow: hidden;
+    visibility: hidden;
+    zoom:1;
+}
+
+//常用字体颜色
+.red{color:#F00F34;}//红色
+.dg{color:#313131;}//深灰色
+.black{color:#000;}
+
+//行内块元素
+span{display:inline-block;}
+
+

@@ -4,7 +4,12 @@ var bp = require('body-parser');
 var path=require('path');
 var supplier = require("./suppliers");
 var powerRouter=require('./power');
+
+var supply_aam = require('./supply_aam');
+
+
 var productsRouter = require('./products');
+
 
 
 
@@ -32,10 +37,13 @@ module.exports = {
         // trackerRouter.register(app);
         powerRouter.register(app);
 
+
+        supply_aam.init(app);
+
+
         productsRouter.register(app);
 
 		 supplier.register(app);
-
 
 
         app.listen(_port,function(){
