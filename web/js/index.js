@@ -1,9 +1,9 @@
          $(function(){
 
 
-                $.get('http://localhost:88/ismy',function(res){
-                        console.log(res);
-                })
+                // $.get('http://localhost:88/ismy',function(res){
+                //         console.log(res);
+                // })
 
 
 
