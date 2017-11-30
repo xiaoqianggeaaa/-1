@@ -1,12 +1,24 @@
          $(function(){
-
-
-                // $.get('http://localhost:88/ismy',function(res){
-                //         console.log(res);
-                // })
+              $('#li_master').on("click",function(){
+                    $('#content_right').html("").load("http://localhost:88/html/power.html #li_right",function(){
 
 
 
+
+		$(".supplier").on("click",function(){
+			console.log(66);
+			
+			$('#content_right').html("").load('html/supplier.html #container');
+		})
+            
+
+                        indexit();
+              });
+              })
+
+
+    indexit();
+ function indexit(){
 
                        //添加管理员，会员
         var cookies=document.cookie;
@@ -217,6 +229,8 @@
         })
 
     }
+}     
+
  })  
 
 
