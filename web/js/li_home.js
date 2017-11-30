@@ -5,7 +5,10 @@ requirejs.config({
 });
 
 requirejs(['jQuery'],function(){
-    requirejs(['index','dragable','load_yz','supplier','global','load_pld',],function(){
+
+    requirejs(['index','dragable','load_yz','supplier','global','load_pld','load_yz'],function(){
         requirejs(['cookie']);
+
+
     })
 })
